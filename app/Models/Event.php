@@ -76,6 +76,16 @@ class Event extends Model
     }
 
     /**
+     * Get the orders of the event.
+     *
+     * @return HasMany<Order, $this>
+     */
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    /**
      * Scope a query to only include published events.
      *
      * @param  Builder<Event>  $query

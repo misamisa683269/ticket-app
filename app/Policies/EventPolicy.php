@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\Event;
 use App\Models\User;
+use Illuminate\Auth\Access\Response;
 
 class EventPolicy
 {
@@ -11,19 +12,20 @@ class EventPolicy
      * Determine whether the user can view the event.
      *
      * Published events are visible to everyone, including guests.
-     * Other events are visible only to the owner and admins.
+     * Other events are visible only to the owner and admins,
+     * and everyone else gets a 404 so the event's existence is not revealed.
      */
-    public function view(?User $user, Event $event): bool
+    public function view(?User $user, Event $event): Response
     {
         if ($event->isPublished()) {
-            return true;
+            return Response::allow();
         }
 
-        if ($user === null) {
-            return false;
+        if ($user !== null && ($this->owns($user, $event) || $user->isAdmin())) {
+            return Response::allow();
         }
 
-        return $this->owns($user, $event) || $user->isAdmin();
+        return Response::denyAsNotFound();
     }
 
     /**
