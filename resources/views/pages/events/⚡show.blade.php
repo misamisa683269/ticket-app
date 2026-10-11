@@ -9,6 +9,13 @@ new class extends Component {
     public Event $event;
 
     /**
+     * Selected quantities keyed by ticket type ID.
+     *
+     * @var array<int|string, int|string>
+     */
+    public array $quantities = [];
+
+    /**
      * Mount the component.
      */
     public function mount(Event $event): void
@@ -30,6 +37,30 @@ new class extends Component {
             ->withReservedQuantity()
             ->orderBy('price')
             ->get();
+    }
+
+    /**
+     * Save the selected quantities and go to the purchase page.
+     *
+     * Guests are sent to the login page by the auth middleware
+     * and come back to the purchase page after logging in.
+     */
+    public function proceed(): void
+    {
+        $quantities = array_filter(
+            array_map('intval', $this->quantities),
+            fn (int $quantity): bool => $quantity > 0,
+        );
+
+        if ($quantities === []) {
+            $this->addError('quantities', '券種を1つ以上選んでください。');
+
+            return;
+        }
+
+        session()->put("purchase.{$this->event->id}", $quantities);
+
+        $this->redirectRoute('events.purchase', $this->event);
     }
 
     /**
@@ -101,10 +132,34 @@ new class extends Component {
                         </flux:text>
                         @if ($ticketType->remaining() === 0)
                             <flux:badge color="red" size="sm">完売</flux:badge>
+                        @elseif (! $ticketType->isOnSale())
+                            <flux:badge color="zinc" size="sm">販売期間外</flux:badge>
                         @endif
                     </div>
+
+                    @if ($event->isPublished())
+                        @php($maxQuantity = min(\App\Services\OrderService::MAX_QUANTITY, $ticketType->remaining()))
+                        <div class="w-full sm:w-28">
+                            <flux:select
+                                wire:model="quantities.{{ $ticketType->id }}"
+                                :aria-label="$ticketType->name.'の枚数'"
+                                :disabled="! $ticketType->isOnSale() || $maxQuantity === 0"
+                            >
+                                @for ($quantity = 0; $quantity <= $maxQuantity; $quantity++)
+                                    <flux:select.option :value="$quantity">{{ $quantity }}枚</flux:select.option>
+                                @endfor
+                            </flux:select>
+                        </div>
+                    @endif
                 </div>
             @endforeach
         </div>
+
+        @if ($event->isPublished())
+            <div class="mt-4 flex flex-col items-end gap-2">
+                <flux:error name="quantities" />
+                <flux:button variant="primary" wire:click="proceed">購入手続きへ進む</flux:button>
+            </div>
+        @endif
     @endif
 </section>

@@ -17,5 +17,5 @@ test('authenticated users are redirected to their home by role', function (UserR
 })->with([
     'admin' => [UserRole::Admin, '/admin/events'],
     'organizer' => [UserRole::Organizer, '/organizer/events'],
-    'customer' => [UserRole::Customer, '/orders'],
+    'customer' => [UserRole::Customer, '/'],
 ]);

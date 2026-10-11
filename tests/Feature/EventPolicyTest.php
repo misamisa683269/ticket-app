@@ -42,3 +42,12 @@ test('published and upcoming scopes return only published future events', functi
 
     expect(Event::published()->upcoming()->pluck('id')->all())->toBe([$visible->id]);
 });
+
+test('only published events can be bought, even by their organizer', function () {
+    $published = Event::factory()->published()->create();
+    $draft = Event::factory()->create();
+
+    expect(Gate::forUser(User::factory()->create())->allows('purchase', $published))->toBeTrue()
+        ->and(Gate::forUser($draft->organizer)->allows('purchase', $draft))->toBeFalse()
+        ->and(Gate::forUser(User::factory()->admin()->create())->allows('purchase', $draft))->toBeFalse();
+});

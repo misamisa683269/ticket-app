@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\OrderStatus;
+use App\Services\OrderService;
 use Database\Factories\OrderFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Scope;
@@ -85,7 +86,7 @@ class Order extends Model
 
     /**
      * Scope a query to orders holding tickets: paid ones and pending ones
-     * created within TicketType::PENDING_MINUTES.
+     * created within OrderService::PENDING_MINUTES.
      *
      * @param  Builder<Order>  $query
      */
@@ -96,7 +97,7 @@ class Order extends Model
             $query->where('status', OrderStatus::Paid)
                 ->orWhere(function (Builder $pending) {
                     $pending->where('status', OrderStatus::Pending)
-                        ->where('created_at', '>=', now()->subMinutes(TicketType::PENDING_MINUTES));
+                        ->where('created_at', '>=', now()->subMinutes(OrderService::PENDING_MINUTES));
                 });
         });
     }

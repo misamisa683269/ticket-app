@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\OrderService;
 use Database\Factories\TicketTypeFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Scope;
@@ -32,8 +33,10 @@ class TicketType extends Model
 
     /**
      * Minutes a pending order keeps its tickets reserved.
+     *
+     * @see OrderService::PENDING_MINUTES
      */
-    public const PENDING_MINUTES = 15;
+    public const PENDING_MINUTES = OrderService::PENDING_MINUTES;
 
     /**
      * Get the attributes that should be cast.

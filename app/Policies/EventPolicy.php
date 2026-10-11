@@ -37,6 +37,16 @@ class EventPolicy
     }
 
     /**
+     * Determine whether the user can buy tickets of the event.
+     *
+     * Being able to view an event is not enough: only published events can be bought.
+     */
+    public function purchase(User $user, Event $event): bool
+    {
+        return $event->isPublished();
+    }
+
+    /**
      * Determine whether the user can update the event.
      */
     public function update(User $user, Event $event): bool

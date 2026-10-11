@@ -13,9 +13,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return redirect(match ($request->user()->role) {
             UserRole::Admin => '/admin/events',
             UserRole::Organizer => '/organizer/events',
-            UserRole::Customer => '/orders',
+            UserRole::Customer => '/',
         });
     })->name('dashboard');
+
+    Route::livewire('events/{event}/purchase', 'pages::events.purchase')->name('events.purchase');
+    Route::livewire('orders/{order}/complete', 'pages::orders.complete')->name('orders.complete');
 });
 
 Route::middleware(['auth', 'verified', 'role:organizer'])
