@@ -2,6 +2,7 @@
     "(and :count more error)": "(その他、:countエラーあり)",
     "(and :count more errors)": "(その他、:countエラーあり)",
     "2FA recovery codes": "二要素認証のリカバリーコード",
+    "Account type": "アカウントの種類",
     ":action to join the \":team\" team.": ":actionして「:team」チームに参加してください。",
     ":inviter invited you to join this team.": ":inviter さんがあなたをこのチームに招待しました。",
     ":inviterName has invited you to join the :teamName team.": ":inviterName さんがあなたを :teamName チームに招待しました。",
