@@ -2,6 +2,7 @@
 
 use App\Enums\EventStatus;
 use App\Models\Event;
+use App\Models\TicketType;
 use App\Models\User;
 use Livewire\Livewire;
 
@@ -114,7 +115,7 @@ test('actions are authorized again after the page is opened', function (string $
 })->with(['save', 'togglePublish', 'deleteEvent']);
 
 test('owners can toggle between draft and published', function () {
-    $event = Event::factory()->create();
+    $event = Event::factory()->has(TicketType::factory())->create();
     $this->actingAs($event->organizer);
 
     $component = Livewire::test('pages::organizer.events.edit', ['event' => $event]);
